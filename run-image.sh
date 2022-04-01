@@ -8,6 +8,8 @@ image_ver=2022.4
 
 TZ=${TZ:-Canada/Pacific}
 
+container_dir=/home/cpp_best
+
 usage() {
   cat <<EOF
 ${0}
@@ -34,7 +36,7 @@ fi
 set -o xtrace
 
 docker container run -it --rm \
-  -v ${PWD}:/home/cpp_bp \
+  -v ${PWD}:${container_dir} \
   -e TZ=${TZ} \
-  --workdir /home/cpp_bp \
+  --workdir ${container_dir} \
   ${image_name}:${image_ver}
