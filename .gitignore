@@ -20,6 +20,9 @@ CMakeUserPresets.json
 _ReSharper*
 *.log
 
+# Internal documents
+*.ooutline
+
 # OS Generated Files
 .DS_Store
 .AppleDouble
