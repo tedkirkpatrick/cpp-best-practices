@@ -31,8 +31,6 @@ jobs:
       matrix:
         os:
           - ubuntu-20.04
-          - macos-10.15
-          - windows-2019
         compiler:
           # you can specify the version after `-` like "llvm-13.0.0".
           - llvm-13.0.0
@@ -47,9 +45,6 @@ jobs:
           - OFF
 
         exclude:
-          # mingw is determined by this author to be too buggy to support
-          - os: windows-2019
-            compiler: gcc-11
 
         include:
           # Add appropriate variables for gcov version required. This will intentionally break
@@ -71,31 +66,6 @@ jobs:
             build_type: Debug
             gcov_executable: gcov
             developer_mode: On
-
-          - os: windows-2022
-            compiler: msvc
-            generator: "Visual Studio 17 2022"
-            build_type: Debug
-            developer_mode: On
-          - os: windows-2022
-            compiler: msvc
-            generator: "Visual Studio 17 2022"
-            build_type: Release
-            developer_mode: On
-          - os: windows-2022
-            compiler: msvc
-            generator: "Visual Studio 17 2022"
-            build_type: Debug
-            developer_mode: Off
-          - os: windows-2022
-            compiler: msvc
-            generator: "Visual Studio 17 2022"
-            build_type: Release
-            developer_mode: Off
-            package_generator: ZIP
-
-
-
 
 
     steps:
