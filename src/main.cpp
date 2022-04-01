@@ -5,7 +5,7 @@
 #include <spdlog/spdlog.h>
 
 // This file will be generated automatically when you run the CMake configuration step.
-// It creates a namespace called `cpp-best-practices`.
+// It creates a namespace called `cpp_best_practices`.
 // You can modify the source template at `configured_files/config.hpp.in`.
 #include <internal_use_only/config.hpp>
 
@@ -34,8 +34,8 @@ int main(int argc, const char **argv)
       { std::next(argv), std::next(argv, argc) },
       true,// show help if requested
       fmt::format("{} {}",
-        cpp-best-practices::cmake::project_name,
-        cpp-best-practices::cmake::project_version));// version string, acquired from config.hpp via CMake
+        cpp_best_practices::cmake::project_name,
+        cpp_best_practices::cmake::project_version));// version string, acquired from config.hpp via CMake
 
     for (auto const &arg : args) { std::cout << arg.first << "=" << arg.second << '\n'; }
 
