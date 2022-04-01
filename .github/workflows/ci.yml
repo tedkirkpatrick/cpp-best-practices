@@ -44,7 +44,7 @@ jobs:
           - ON
           - OFF
 
-        exclude:
+        exclude: {}
 
         include:
           # Add appropriate variables for gcov version required. This will intentionally break
