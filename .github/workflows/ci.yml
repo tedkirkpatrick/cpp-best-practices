@@ -120,11 +120,15 @@ jobs:
 
       - name: Unix coverage
         if: runner.os != 'Windows' && matrix.build_type == 'Debug'
+        working-directory: ./build
         run: |
-          echo "PWD=${PWD}"
-          echo "\nls ..."
+          echo "PWD ..."
+          echo $PWD
+          echo
+          echo "ls ..."
           ls
-          echo "\ngcovr ..."
+          echo
+          echo "gcovr ..."
           gcovr -j ${{env.nproc}} --delete --root ../ --print-summary --xml-pretty --xml coverage.xml . --gcov-executable '${{ matrix.gcov_executable }}'
 
       - name: Windows - Test and coverage
