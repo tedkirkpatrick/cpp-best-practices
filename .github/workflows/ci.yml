@@ -78,7 +78,7 @@ jobs:
           developer_mode: ${{ matrix.developer_mode }}
           generator: ${{ matrix.generator }}
 
-      - name: Setup cpp
+      - name: Setup build tools
         uses: aminya/setup-cpp@v1
         with:
           compiler: ${{ matrix.compiler }}
