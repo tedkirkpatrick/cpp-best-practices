@@ -121,6 +121,10 @@ jobs:
       - name: Unix coverage
         if: runner.os != 'Windows' && matrix.build_type == 'Debug'
         run: |
+          echo "PWD=${PWD}"
+          echo "\nls ..."
+          ls
+          echo "\ngcovr ..."
           gcovr -j ${{env.nproc}} --delete --root ../ --print-summary --xml-pretty --xml coverage.xml . --gcov-executable '${{ matrix.gcov_executable }}'
 
       - name: Windows - Test and coverage
