@@ -3,9 +3,6 @@
 [![ci](https://github.com/tedkirkpatrick/cpp-best-practices/actions/workflows/ci.yml/badge.svg)](https://github.com/tedkirkpatrick/cpp-best-practices/actions/workflows/ci.yml)
 [![codecov](https://codecov.io/gh/tedkirkpatrick/cpp-best-practices/branch/main/graph/badge.svg)](https://codecov.io/gh/tedkirkpatrick/cpp-best-practices)
 [![CodeQL](https://github.com/tedkirkpatrick/cpp-best-practices/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/tedkirkpatrick/cpp-best-practices/actions/workflows/codeql-analysis.yml)
-
-LGTM Has to be set up manually after template is created:
-
 [![Language grade: C++](https://img.shields.io/lgtm/grade/cpp/github/tedkirkpatrick/cpp-best-practices)](https://lgtm.com/projects/g/tedkirkpatrick/cpp-best-practices/context:cpp)
 
 ## About cpp-best-practices
