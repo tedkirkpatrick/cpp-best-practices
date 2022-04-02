@@ -133,6 +133,7 @@ jobs:
 
       - name: Publish coverage to codecov
         uses: codecov/codecov-action@v2
+        if: runner.os == 'Windows' || (runner.os != 'Windows' && matrix.build_type == 'Debug')
         with:
           flags: ${{ runner.os }}
           name: ${{ runner.os }}-coverage
