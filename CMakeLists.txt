@@ -37,6 +37,12 @@ include(${_project_options_SOURCE_DIR}/Index.cmake)
 # run_vcpkg()
 
 # Set the project name and language
+# The version number will be merged into:
+# 1. The 'configured_files/config.hpp.in' template for
+#    embedding in the executable, displayed via '--version'.
+# 2. The names of the packaged executables, via the
+#    'CPACK_PACKAGE_FILE_NAME' variable
+#    defined later in this file.
 project(
   cpp-best-practices
   VERSION 0.0.1
