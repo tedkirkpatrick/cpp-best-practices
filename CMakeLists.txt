@@ -20,9 +20,13 @@ set(ENABLE_DEVELOPER_MODE
 # Change this to false if you want to disable warnings_as_errors in developer mode
 set(OPT_WARNINGS_AS_ERRORS_DEVELOPER_DEFAULT TRUE)
 
-# Add project_options v0.17.0
-# https://github.com/cpp-best-practices/project_options
+# Import FetchContent standard CMake module:
+# https://cmake.org/cmake/help/latest/module/FetchContent.html
 include(FetchContent)
+
+# Use FetchContent module to add project_options v0.17.0
+# Following URL redirects to actual home of project_options:
+# https://github.com/cpp-best-practices/project_options
 FetchContent_Declare(_project_options
                      URL https://github.com/cpp-best-practices/project_options/archive/refs/tags/v0.17.0.zip)
 FetchContent_MakeAvailable(_project_options)
@@ -136,11 +140,19 @@ set_property(DIRECTORY PROPERTY VS_STARTUP_PROJECT intro)
 # we know we want to ship
 package_project(TARGETS intro)
 
+# Configure the packaged name of the application.
 # Experience shows that explicit package naming can help make it easier to sort
 # out potential ABI related issues before they start, while helping you
-# track a build to a specific GIT SHA
+# track a build to a specific GIT SHA.
 set(CPACK_PACKAGE_FILE_NAME
     "${CMAKE_PROJECT_NAME}-${CMAKE_PROJECT_VERSION}-${GIT_SHORT_SHA}-${CMAKE_SYSTEM_NAME}-${CMAKE_BUILD_TYPE}-${CMAKE_CXX_COMPILER_ID}-${CMAKE_CXX_COMPILER_VERSION}"
 )
 
+# Import CPack standard CMake module:
+# https://cmake.org/cmake/help/latest/module/CPack.html
+# The CPack module creates the build/CPackConfig.cmake file, which
+# in turn configures the cpack tool that actually builds the package
+# when called by the ci.yml GitHub action. The
+# CPACK_PACKAGE_FILE_NAME defined above is one of the values added to
+# the file.
 include(CPack)
