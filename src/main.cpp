@@ -5,6 +5,8 @@
 
 #include <docopt/docopt.h>
 #include <spdlog/spdlog.h>
+#include <spdlog/sinks/basic_file_sink.h>
+
 
 // This file will be generated automatically when you run the CMake configuration step.
 // It creates a namespace called `cpp_best_practices`.
@@ -51,14 +53,17 @@ static constexpr auto USAGE =
 
 using ArgMap = std::map<std::string, docopt::value>;
 
-[[nodiscard]] auto getTwoArgs(const ArgMap &args) {
+[[nodiscard]] auto getTwoInts(const ArgMap &args) {
+  auto logger = spdlog::get("logger");
   const auto [a_valid, a] = getInt(args.at("<int_a>").asString());
   if (not a_valid) {
     fmt::print("'{}' is not an integer or out of range\n", args.at("<int_a>").asString());
+    logger->error("'{}' is not an integer or out of range", args.at("<int_a>").asString());
   }
   const auto [b_valid, b] = getInt(args.at("<int_b>").asString());
   if (not b_valid) {
     fmt::print("'{}' is not an integer or out of range\n", args.at("<int_b>").asString());
+    logger->error("'{}' is not an integer or out of range", args.at("<int_a>").asString());
   }
   if (not a_valid or not b_valid) {
     return std::tuple{false, 0, 0};
@@ -69,6 +74,8 @@ using ArgMap = std::map<std::string, docopt::value>;
 int main(int argc, const char **argv)
 {
   try {
+    auto logger = spdlog::basic_logger_st("logger", "logs/basic-log.txt");
+
     ArgMap args = docopt::docopt(USAGE,
       { std::next(argv), std::next(argv, argc) },
       true,// show help if requested
@@ -76,10 +83,8 @@ int main(int argc, const char **argv)
         cpp_best_practices::cmake::project_name,
         cpp_best_practices::cmake::project_version));// version string, acquired from config.hpp via CMake
 
-    std::cout << "add " <<  args.at("add") << " mult " << args.at("mult") << '\n';
-
     if (args.at("add").asBool()) {
-      auto [valid, a, b] = getTwoArgs(args);
+      auto [valid, a, b] = getTwoInts(args);
       if (valid) {
 	fmt::print("{} + {} = {}\n",
 		   a,
@@ -88,7 +93,7 @@ int main(int argc, const char **argv)
       }
     }
     else if (args.at("mult").asBool()) {
-      auto [valid, a, b] = getTwoArgs(args);
+      auto [valid, a, b] = getTwoInts(args);
       if (valid) {
 	fmt::print("{} * {} = {}\n",
 		   a,
@@ -96,10 +101,6 @@ int main(int argc, const char **argv)
 		   mult(a, b));
       }
     }
-
-    // Use the default logger (stdout, multi-threaded, colored)
-    spdlog::info("Hello, {}!", "World");
-
   } catch (const std::exception &e) {
     fmt::print("Unhandled exception in main: {}\n", e.what());
   }
