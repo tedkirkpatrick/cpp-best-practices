@@ -1,6 +1,7 @@
 #include <functional>
 #include <iostream>
 #include <string>
+#include <utility>
 
 #include <docopt/docopt.h>
 #include <spdlog/spdlog.h>
@@ -35,13 +36,13 @@ static constexpr auto USAGE =
     if (count != sVal.size()) {
       throw std::invalid_argument(fmt::format("'{}' is not an integer", sVal));
     }
-    return docopt::value(val);
+    return std::pair{true, val};
   }
   catch(const std::invalid_argument &e) {
-    return docopt::value();
+    return std::pair{false, 0};
   }
   catch (const std::out_of_range &e) {
-    return docopt::value();
+    return std::pair{false, 0};
   }
 }
 
@@ -60,27 +61,19 @@ int main(int argc, const char **argv)
         cpp_best_practices::cmake::project_version));// version string, acquired from config.hpp via CMake
 
     if (args["add"]) {
-      auto a = getInt(args["<int_a>"]);
-      int av {};
-      if (isEmpty(a)) {
+      auto [a_valid, a] = getInt(args["<int_a>"]);
+      if (not a_valid) {
 	fmt::print("'{}' is not an integer or out of range\n", args["<int_a>"].asString());
       }
-      else {
-        av = static_cast<int>(a.asLong());
-      }
-      auto b = getInt(args["<int_b>"]);
-      int bv {};
-      if (isEmpty(b)) {
+      auto [b_valid, b] = getInt(args["<int_b>"]);
+      if (not b_valid) {
 	fmt::print("'{}' is not an integer or out of range\n", args["<int_b>"].asString());
       }
-      else {
-        bv = static_cast<int>(b.asLong());
-      }
-      if (not isEmpty(a) and not isEmpty(b)) {
+      if (a_valid and b_valid) {
 	fmt::print("{} + {} = {}\n",
-		   av,
-		   bv,
-		   add(av, bv));
+		   a,
+		   b,
+		   add(a, b));
       }
     }
 
