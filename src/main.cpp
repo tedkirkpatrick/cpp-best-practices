@@ -28,9 +28,8 @@ static constexpr auto USAGE =
   return left + right;
 }
 
-[[nodiscard]] auto getInt(const docopt::value &arg) {
+[[nodiscard]] auto getInt(const std::string &sVal) {
   try {
-    const auto &sVal = arg.asString();
     std::size_t count {};
     auto val = std::stoi(sVal, &count);
     if (count != sVal.size()) {
@@ -57,11 +56,11 @@ int main(int argc, const char **argv)
         cpp_best_practices::cmake::project_version));// version string, acquired from config.hpp via CMake
 
     if (args["add"]) {
-      auto [a_valid, a] = getInt(args["<int_a>"]);
+      auto [a_valid, a] = getInt(args["<int_a>"].asString());
       if (not a_valid) {
 	fmt::print("'{}' is not an integer or out of range\n", args["<int_a>"].asString());
       }
-      auto [b_valid, b] = getInt(args["<int_b>"]);
+      auto [b_valid, b] = getInt(args["<int_b>"].asString());
       if (not b_valid) {
 	fmt::print("'{}' is not an integer or out of range\n", args["<int_b>"].asString());
       }
