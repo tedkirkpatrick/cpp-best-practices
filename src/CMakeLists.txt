@@ -13,5 +13,3 @@ target_link_libraries(
           spdlog::spdlog)
 
 target_include_directories(intro PRIVATE "${CMAKE_BINARY_DIR}/configured_files/include")
-
-target_sources(intro PRIVATE ops.cpp)

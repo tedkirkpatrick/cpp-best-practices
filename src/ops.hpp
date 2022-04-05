@@ -1,11 +1,17 @@
 #ifndef OPS_HPP
 #define OPS_HPP
 
+#include <concepts>
+
 namespace ops {
 
-[[nodiscard]] int add(int lhs, int rhs) noexcept;
+[[nodiscard]] constexpr auto add(std::integral auto lhs, std::integral auto rhs) noexcept {
+  return lhs + rhs;
+}
 
-[[nodiscard]] int mult(int lhs, int rhs) noexcept;
+[[nodiscard]] constexpr auto mult(std::integral auto lhs, std::integral auto rhs) noexcept {
+  return lhs * rhs;
+}
 
 } // namespace ops
 
