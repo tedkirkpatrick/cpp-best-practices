@@ -24,8 +24,8 @@ set(OPT_WARNINGS_AS_ERRORS_DEVELOPER_DEFAULT TRUE)
 # https://cmake.org/cmake/help/latest/module/FetchContent.html
 include(FetchContent)
 
-# Use FetchContent module to add project_options v0.17.0
-# Following URL redirects to actual home of project_options:
+# Use FetchContent module to add 'project_options' v0.17.0
+# Following URL redirects to actual home of 'project_options':
 # https://github.com/cpp-best-practices/project_options
 FetchContent_Declare(_project_options
                      URL https://github.com/cpp-best-practices/project_options/archive/refs/tags/v0.17.0.zip)
@@ -33,12 +33,13 @@ FetchContent_MakeAvailable(_project_options)
 include(${_project_options_SOURCE_DIR}/Index.cmake)
 
 # uncomment to enable vcpkg:
+# Function 'run_vcpkg()' defined in 'project_options', imported above.
 # # Setup vcpkg - should be called before defining project()
 # run_vcpkg()
 
 # Set the project name and language
 # The version number will be merged into:
-# 1. The 'configured_files/config.hpp.in' template for
+# 1. The file 'configured_files/config.hpp.in' for
 #    embedding in the executable, displayed via '--version'.
 # 2. The names of the packaged executables, via the
 #    'CPACK_PACKAGE_FILE_NAME' variable
@@ -81,13 +82,14 @@ if(BUILDING_MULTI_CONFIG)
   endif()
 endif()
 
+
+# Import function 'dynamic_project_options()', used below.
 include(${_project_options_SOURCE_DIR}/src/DynamicProjectOptions.cmake)
 
 # defaulted_project_options sets recommended defaults and provides user and developer
 # modes and full GUI support for choosing options at configure time
 
 # for more flexibility, look into project_options() macro
-
 # Any default can be overridden
 # set(<feature_name>_DEFAULT <value>) - set default for both user and developer modes
 # set(<feature_name>_DEVELOPER_DEFAULT <value>) - set default for developer mode
@@ -111,7 +113,7 @@ dynamic_project_options(
 
 target_compile_features(project_options INTERFACE cxx_std_${CMAKE_CXX_STANDARD})
 
-# configure files based on CMake configuration options
+# Add files incorporating CMake configuration options
 add_subdirectory(configured_files)
 
 # Adding the src:
@@ -142,11 +144,17 @@ endif()
 # set the startup project for the "play" button in MSVC
 set_property(DIRECTORY PROPERTY VS_STARTUP_PROJECT intro)
 
+# Function 'package_project()' is defined in 'project_options', imported above.
+# Creates list of items to install.
+# Calls CMake 'install()' command:
+# https://cmake.org/cmake/help/latest/command/install.html
+# Its output will be used by the CPack module below to configure the
+# 'cpack' tool.
 # Add other targets that you want installed here, be default we just package the one executable
 # we know we want to ship
 package_project(TARGETS intro)
 
-# Configure the packaged name of the application.
+# Define the name of the package.
 # Experience shows that explicit package naming can help make it easier to sort
 # out potential ABI related issues before they start, while helping you
 # track a build to a specific GIT SHA.
@@ -157,7 +165,7 @@ set(CPACK_PACKAGE_FILE_NAME
 # Import CPack standard CMake module:
 # https://cmake.org/cmake/help/latest/module/CPack.html
 # The CPack module creates the build/CPackConfig.cmake file, which
-# in turn configures the cpack tool that actually builds the package
+# in turn configures the 'cpack' tool that actually builds the package
 # when called by the ci.yml GitHub action. The
 # CPACK_PACKAGE_FILE_NAME defined above is one of the values added to
 # the file.
