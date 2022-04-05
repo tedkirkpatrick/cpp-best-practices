@@ -28,6 +28,10 @@ static constexpr auto USAGE =
   return left + right;
 }
 
+[[nodiscard]] constexpr auto mult(int left, int right) {
+  return left * right;
+}
+
 [[nodiscard]] auto getInt(const std::string &sVal) {
   try {
     std::size_t count {};
@@ -45,30 +49,51 @@ static constexpr auto USAGE =
   }
 }
 
+using ArgMap = std::map<std::string, docopt::value>;
+
+[[nodiscard]] auto getTwoArgs(const ArgMap &args) {
+  const auto [a_valid, a] = getInt(args.at("<int_a>").asString());
+  if (not a_valid) {
+    fmt::print("'{}' is not an integer or out of range\n", args.at("<int_a>").asString());
+  }
+  const auto [b_valid, b] = getInt(args.at("<int_b>").asString());
+  if (not b_valid) {
+    fmt::print("'{}' is not an integer or out of range\n", args.at("<int_b>").asString());
+  }
+  if (not a_valid or not b_valid) {
+    return std::tuple{false, 0, 0};
+  }
+  return std::tuple{true, a, b};
+}
+
 int main(int argc, const char **argv)
 {
   try {
-    std::map<std::string, docopt::value> args = docopt::docopt(USAGE,
+    ArgMap args = docopt::docopt(USAGE,
       { std::next(argv), std::next(argv, argc) },
       true,// show help if requested
       fmt::format("{} {}",
         cpp_best_practices::cmake::project_name,
         cpp_best_practices::cmake::project_version));// version string, acquired from config.hpp via CMake
 
-    if (args["add"]) {
-      auto [a_valid, a] = getInt(args["<int_a>"].asString());
-      if (not a_valid) {
-	fmt::print("'{}' is not an integer or out of range\n", args["<int_a>"].asString());
-      }
-      auto [b_valid, b] = getInt(args["<int_b>"].asString());
-      if (not b_valid) {
-	fmt::print("'{}' is not an integer or out of range\n", args["<int_b>"].asString());
-      }
-      if (a_valid and b_valid) {
+    std::cout << "add " <<  args.at("add") << " mult " << args.at("mult") << '\n';
+
+    if (args.at("add").asBool()) {
+      auto [valid, a, b] = getTwoArgs(args);
+      if (valid) {
 	fmt::print("{} + {} = {}\n",
 		   a,
 		   b,
 		   add(a, b));
+      }
+    }
+    else if (args.at("mult").asBool()) {
+      auto [valid, a, b] = getTwoArgs(args);
+      if (valid) {
+	fmt::print("{} * {} = {}\n",
+		   a,
+		   b,
+		   mult(a, b));
       }
     }
 
