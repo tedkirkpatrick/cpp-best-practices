@@ -30,11 +30,11 @@ static constexpr auto USAGE =
 
 [[nodiscard]] auto getInt(const docopt::value &arg) {
   try {
-    auto sVal = arg.asString();
+    const auto &sVal = arg.asString();
     std::size_t count {};
     auto val = std::stoi(sVal, &count);
     if (count != sVal.size()) {
-      throw std::invalid_argument(fmt::format("'{}' is not an integer", sVal));
+      return std::pair{false, 0};
     }
     return std::pair{true, val};
   }
