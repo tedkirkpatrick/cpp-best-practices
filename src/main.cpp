@@ -7,6 +7,8 @@
 #include <spdlog/spdlog.h>
 #include <spdlog/sinks/basic_file_sink.h>
 
+#include "ops.hpp"
+
 
 // This file will be generated automatically when you run the CMake configuration step.
 // It creates a namespace called `cpp_best_practices`.
@@ -26,19 +28,12 @@ static constexpr auto USAGE =
           --version     Show version.
 )";
 
-[[nodiscard]] constexpr auto add(int left, int right) {
-  return left + right;
-}
-
-[[nodiscard]] constexpr auto mult(int left, int right) {
-  return left * right;
-}
-
 [[nodiscard]] auto getInt(const std::string &sVal) {
   try {
     std::size_t count {};
     auto val = std::stoi(sVal, &count);
     if (count != sVal.size()) {
+      // There were trailing non-digits
       return std::pair{false, 0};
     }
     return std::pair{true, val};
@@ -89,7 +84,7 @@ int main(int argc, const char **argv)
 	fmt::print("{} + {} = {}\n",
 		   a,
 		   b,
-		   add(a, b));
+		   ops::add(a, b));
       }
     }
     else if (args.at("mult").asBool()) {
@@ -98,7 +93,7 @@ int main(int argc, const char **argv)
 	fmt::print("{} * {} = {}\n",
 		   a,
 		   b,
-		   mult(a, b));
+		   ops::mult(a, b));
       }
     }
   } catch (const std::exception &e) {
