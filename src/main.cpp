@@ -24,7 +24,7 @@ static constexpr auto USAGE =
           --version     Show version.
 )";
 
-[[nodiscard]] auto add(int left, int right) {
+[[nodiscard]] constexpr auto add(int left, int right) {
   return left + right;
 }
 
@@ -44,10 +44,6 @@ static constexpr auto USAGE =
   catch (const std::out_of_range &e) {
     return std::pair{false, 0};
   }
-}
-
-[[nodiscard]] bool isEmpty(const docopt::value &v) noexcept {
-  return v.kind() == docopt::Kind::Empty;
 }
 
 int main(int argc, const char **argv)
