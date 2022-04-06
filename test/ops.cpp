@@ -1,6 +1,6 @@
 #include <catch2/catch.hpp>
 
-#include "../src/ops.hpp"
+#include "ops.hpp"
 
 TEST_CASE("Addition", "[ops]")
 {
