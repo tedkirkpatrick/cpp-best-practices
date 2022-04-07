@@ -12,6 +12,8 @@ target_link_libraries(
           -coverage
           -fsanitize=fuzzer,undefined,address)
 target_compile_options(fuzz_tester PRIVATE -fsanitize=fuzzer,undefined,address)
+target_include_directories(fuzz_tester PRIVATE ../src)
+target_link_directories(fuzz_tester PRIVATE ../src)
 
 # Allow short runs during automated testing to see if something new breaks
 set(FUZZ_RUNTIME

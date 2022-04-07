@@ -1,14 +1,18 @@
 #include <catch2/catch.hpp>
 
-constexpr unsigned int Factorial(unsigned int number)// NOLINT(misc-no-recursion)
+#include "ops.hpp"
+
+TEST_CASE("Operations are computed with constexpr", "[ops]")
 {
-  return number <= 1 ? number : Factorial(number - 1) * number;
+  STATIC_REQUIRE(ops::add(4, 5) == 9);
+  STATIC_REQUIRE(ops::mult(4, 5) == 20);
 }
 
-TEST_CASE("Factorials are computed with constexpr", "[factorial]")
+/*
+// Uncomment this test to demonstrate constexpr evaluation
+// locating undefined behaviour (signed int overflow).
+TEST_CASE("Constexpr test locating undefined behaviour", "[ops]")
 {
-  STATIC_REQUIRE(Factorial(1) == 1);
-  STATIC_REQUIRE(Factorial(2) == 2);
-  STATIC_REQUIRE(Factorial(3) == 6);
-  STATIC_REQUIRE(Factorial(10) == 3628800);
+  STATIC_REQUIRE(ops::mult(46341, 46341) == -2147479015);
 }
+*/
