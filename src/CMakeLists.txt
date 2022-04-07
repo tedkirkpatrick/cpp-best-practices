@@ -3,10 +3,12 @@ find_package(spdlog CONFIG)
 find_package(docopt CONFIG)
 
 # Generic test that uses conan libs
-add_executable(intro main.cpp leak.cpp)
+add_executable(intro main.cpp sandemo.cpp)
 
-#set_source_files_properties(leak.cpp PROPERTIES COMPILE_OPTIONS -Wno-error=memleak -Wno-error=unreadVariable -Wno-error=unusedAllocatedMemory)
-set_source_files_properties(leak.cpp PROPERTIES COMPILE_OPTIONS -Wno-error=array-bounds)
+# sandemo.cpp requires special options because it demonstrates bad coding
+# Turn off array-bounds checking by the compiler so that the address sanitizer can catch it
+# Set '-O0' so that optimizer does not cull the useless allocation
+set_source_files_properties(sandemo.cpp PROPERTIES COMPILE_OPTIONS "-Wno-error=array-bounds;-O0")
 
 target_link_libraries(
   intro

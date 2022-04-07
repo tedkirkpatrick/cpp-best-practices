@@ -7,8 +7,8 @@
 #include <spdlog/spdlog.h>
 #include <spdlog/sinks/basic_file_sink.h>
 
-#include "leak.hpp"
 #include "ops.hpp"
+#include "sandemo.hpp"
 
 
 // This file will be generated automatically when you run the CMake configuration step.
@@ -23,6 +23,7 @@ static constexpr auto USAGE =
           intro add <int_a> <int_b>
           intro mult <int_a> <int_b>
           intro leak
+          intro bound
           intro (-h | --help)
           intro --version
  Options:
@@ -99,8 +100,12 @@ int main(int argc, const char **argv)
       }
     }
     else if (args.at("leak").asBool()) {
-      leak::leak_memory();
+      sandemo::leak_memory();
       logger->info("An allocated object will not be freed upon this program's end");
+    }
+    else if (args.at("bound").asBool()) {
+      sandemo::bound();
+      logger->info("A reference was made outside an array boundary");
     }
   } catch (const std::exception &e) {
     fmt::print("Unhandled exception in main: {}\n", e.what());
