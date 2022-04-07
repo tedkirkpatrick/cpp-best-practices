@@ -3,7 +3,7 @@ find_package(spdlog CONFIG)
 find_package(docopt CONFIG)
 
 # Generic test that uses conan libs
-add_executable(intro main.cpp sandemo.cpp)
+add_executable(intro main.cpp sandemo.cpp ops.cpp)
 
 # sandemo.cpp requires special options because it demonstrates bad coding
 # Turn off array-bounds checking by the compiler so that the address sanitizer can catch it

@@ -13,6 +13,8 @@ namespace ops {
   return lhs * rhs;
 }
 
+[[nodiscard]] auto flaky_add(int lhs, int rhs) noexcept;
+
 } // namespace ops
 
 #endif
