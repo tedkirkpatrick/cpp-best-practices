@@ -7,6 +7,7 @@
 #include <spdlog/spdlog.h>
 #include <spdlog/sinks/basic_file_sink.h>
 
+#include "leak.hpp"
 #include "ops.hpp"
 
 
@@ -21,6 +22,7 @@ static constexpr auto USAGE =
     Usage:
           intro add <int_a> <int_b>
           intro mult <int_a> <int_b>
+          intro leak
           intro (-h | --help)
           intro --version
  Options:
@@ -95,6 +97,10 @@ int main(int argc, const char **argv)
 		   b,
 		   ops::mult(a, b));
       }
+    }
+    else if (args.at("leak").asBool()) {
+      leak::leak_memory();
+      logger->info("An allocated object will not be freed upon this program's end");
     }
   } catch (const std::exception &e) {
     fmt::print("Unhandled exception in main: {}\n", e.what());
