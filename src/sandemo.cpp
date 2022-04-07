@@ -1,5 +1,7 @@
 #include <array>
 
+#include <spdlog/spdlog.h>
+
 #include "sandemo.hpp"
 
 /*
@@ -14,10 +16,10 @@
     file in this directory.
 
     cppcheck-suppress suppresses cppcheck warnings. cppcheck checks are
-    reported and denoted by camelCase names.
+    denoted by camelCase names.
 
-    NOLINT suppresses clang-tidy warnings. clang-tidy checks are reported
-    and denoted by hyphenated-names.
+    NOLINT suppresses clang-tidy warnings. clang-tidy checks are denoted
+    by hyphenated-lowercase names.
 */
 
 
@@ -27,6 +29,8 @@ static constexpr auto length = 400;
 
 // Deliberately allocate memory and never free
 void leak_memory () {
+  auto logger = spdlog::get("logger");
+  logger->error("An allocated object will not be freed upon this program's end");
   // cppcheck-suppress unreadVariable
   // cppcheck-suppress unusedAllocatedMemory
   [[maybe_unused]] auto *leak = new char[length]; // NOLINT(cppcoreguidelines-owning-memory)
@@ -35,7 +39,9 @@ void leak_memory () {
 
 // Deliberately access outside bounds
 void bound() {
+  auto logger = spdlog::get("logger");
   std::array<char, length> a {};
+  logger->critical("A reference is about to be made outside an array boundary");
   // cppcheck-suppress unreadVariable
   // cppcheck-suppress containerOutOfBoundsIndexExpression
   // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-constant-array-index)

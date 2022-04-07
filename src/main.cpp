@@ -5,7 +5,7 @@
 
 #include <docopt/docopt.h>
 #include <spdlog/spdlog.h>
-#include <spdlog/sinks/basic_file_sink.h>
+#include "spdlog/sinks/stdout_color_sinks.h"
 
 #include "ops.hpp"
 #include "sandemo.hpp"
@@ -55,12 +55,10 @@ using ArgMap = std::map<std::string, docopt::value>;
   auto logger = spdlog::get("logger");
   const auto [a_valid, a] = getInt(args.at("<int_a>").asString());
   if (not a_valid) {
-    fmt::print("'{}' is not an integer or out of range\n", args.at("<int_a>").asString());
     logger->error("'{}' is not an integer or out of range", args.at("<int_a>").asString());
   }
   const auto [b_valid, b] = getInt(args.at("<int_b>").asString());
   if (not b_valid) {
-    fmt::print("'{}' is not an integer or out of range\n", args.at("<int_b>").asString());
     logger->error("'{}' is not an integer or out of range", args.at("<int_a>").asString());
   }
   if (not a_valid or not b_valid) {
@@ -72,7 +70,7 @@ using ArgMap = std::map<std::string, docopt::value>;
 int main(int argc, const char **argv)
 {
   try {
-    auto logger = spdlog::basic_logger_st("logger", "logs/basic-log.txt");
+    auto logger = spdlog::stdout_color_mt("logger");
 
     ArgMap args = docopt::docopt(USAGE,
       { std::next(argv), std::next(argv, argc) },
@@ -101,11 +99,9 @@ int main(int argc, const char **argv)
     }
     else if (args.at("leak").asBool()) {
       sandemo::leak_memory();
-      logger->info("An allocated object will not be freed upon this program's end");
     }
     else if (args.at("bound").asBool()) {
       sandemo::bound();
-      logger->info("A reference was made outside an array boundary");
     }
   } catch (const std::exception &e) {
     fmt::print("Unhandled exception in main: {}\n", e.what());
