@@ -24,6 +24,7 @@ static constexpr auto USAGE =
           intro mult <int_a> <int_b>
           intro leak
           intro bound
+          intro flaky_add <int_a> <int_b>
           intro (-h | --help)
           intro --version
  Options:
@@ -95,6 +96,15 @@ int main(int argc, const char **argv)
 		   a,
 		   b,
 		   ops::mult(a, b));
+      }
+    }
+    else if (args.at("flaky_add").asBool()) {
+      auto [valid, a, b] = getTwoInts(args);
+      if (valid) {
+	fmt::print("{} + {} = {}\n",
+		   a,
+		   b,
+		   ops::flaky_add(a, b));
       }
     }
     else if (args.at("leak").asBool()) {
