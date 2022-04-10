@@ -1,4 +1,5 @@
 #include <array>
+#include <limits>
 
 #include <spdlog/spdlog.h>
 
@@ -30,7 +31,7 @@ static constexpr auto length = 400;
 // Deliberately allocate memory and never free
 void leak_memory () {
   auto logger = spdlog::get("logger");
-  logger->error("An allocated object will not be freed upon this program's end");
+  if (logger) {logger->error("An allocated object will not be freed upon this program's end");}
   // cppcheck-suppress unreadVariable
   // cppcheck-suppress unusedAllocatedMemory
   [[maybe_unused]] auto *leak = new char[length]; // NOLINT(cppcoreguidelines-owning-memory)
@@ -41,11 +42,16 @@ void leak_memory () {
 void bound() {
   auto logger = spdlog::get("logger");
   std::array<char, length> a {};
-  logger->critical("A reference is about to be made outside an array boundary");
+  if (logger) {logger->critical("A reference is about to be made outside an array boundary");}
   // cppcheck-suppress unreadVariable
   // cppcheck-suppress containerOutOfBoundsIndexExpression
   // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-constant-array-index)
   a[a.size()] = 'h'; 
+}
+
+// Deliberately perform a signed overflow whenever passed i >= 1
+int signed_overflow(int i) {
+  return std::numeric_limits<int>::max() + i; // NOLINT clang-diagnostic-integer-overflow
 }
 
 } // namespace sandemo
