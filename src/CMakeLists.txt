@@ -17,6 +17,7 @@ target_link_libraries(
           project_warnings
           docopt::docopt
           fmt::fmt
-          spdlog::spdlog)
+          spdlog::spdlog
+	  -fno-sanitize-recover)
 
 target_include_directories(intro PRIVATE "${CMAKE_BINARY_DIR}/configured_files/include")

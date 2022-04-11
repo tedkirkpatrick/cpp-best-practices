@@ -24,6 +24,7 @@ static constexpr auto USAGE =
           intro mult <int_a> <int_b>
           intro leak
           intro bound
+          intro signed_overflow
           intro flaky_add <int_a> <int_b>
           intro (-h | --help)
           intro --version
@@ -112,6 +113,10 @@ int main(int argc, const char **argv)
     }
     else if (args.at("bound").asBool()) {
       sandemo::bound();
+    }
+    else if (args.at("signed_overflow").asBool()) {
+      (void) sandemo::signed_overflow(1);
+      fmt::print("Whew---survived that overflow!\n");
     }
   } catch (const std::exception &e) {
     fmt::print("Unhandled exception in main: {}\n", e.what());
