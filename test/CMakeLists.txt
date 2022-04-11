@@ -1,10 +1,18 @@
 find_package(Catch2 REQUIRED)
+find_package(docopt CONFIG)
+find_package(fmt CONFIG)
+find_package(spdlog CONFIG)
 
 include(CTest)
 include(Catch)
 
 add_library(catch_main OBJECT catch_main.cpp)
-target_link_libraries(catch_main PUBLIC Catch2::Catch2)
+target_link_libraries(
+  catch_main
+  PUBLIC Catch2::Catch2
+         docopt::docopt
+         fmt::fmt
+	 spdlog::spdlog)
 target_link_libraries(catch_main PRIVATE project_options)
 
 # Provide a simple smoke test to make sure that the CLI works and can display a --help message
@@ -17,8 +25,29 @@ add_test(NAME cli.has_help COMMAND intro --help)
 add_test(NAME cli.version_matches COMMAND intro --version)
 set_tests_properties(cli.version_matches PROPERTIES PASS_REGULAR_EXPRESSION "${PROJECT_VERSION}")
 
+add_test(NAME cli.add COMMAND intro add 4 5)
+set_tests_properties(cli.add PROPERTIES PASS_REGULAR_EXPRESSION "9")
 
-add_executable(tests ops.cpp)
+add_test(NAME cli.mult COMMAND intro mult 4 5)
+set_tests_properties(cli.mult PROPERTIES PASS_REGULAR_EXPRESSION "20")
+
+add_test(NAME cli.flaky_add COMMAND intro flaky_add 1073741823 1)
+set_tests_properties(cli.flaky_add PROPERTIES PASS_REGULAR_EXPRESSION "-1073741824")
+
+add_test(NAME cli.leak COMMAND intro leak)
+set_tests_properties(cli.leak PROPERTIES PASS_REGULAR_EXPRESSION "detected memory leaks")
+
+add_test(NAME cli.bound COMMAND intro bound)
+set_tests_properties(cli.bound PROPERTIES PASS_REGULAR_EXPRESSION "buffer-overflow")
+
+add_test(NAME cli.signed_overflow COMMAND intro signed_overflow)
+set_tests_properties(cli.signed_overflow PROPERTIES PASS_REGULAR_EXPRESSION "signed integer overflow")
+
+add_test(NAME cli.bad_command COMMAND intro bad_command)
+set_tests_properties(cli.bad_command PROPERTIES PASS_REGULAR_EXPRESSION "Arguments did not match expected patterns")
+
+add_executable(tests ops.cpp test_parse_args.cpp)
+target_sources(tests PRIVATE ../src/parse_args.cpp)
 target_link_libraries(tests PRIVATE project_warnings project_options catch_main)
 target_include_directories(tests PRIVATE ../src)
 target_link_directories(tests PRIVATE ../src)

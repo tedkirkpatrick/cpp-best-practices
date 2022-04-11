@@ -8,9 +8,9 @@ namespace ops {
 // Proportion of range to return wrong value
 constexpr static auto proportion = 0.25;
 
-constexpr static auto range = static_cast<int>(
-  proportion * std::numeric_limits<int>::max());
-constexpr static auto low = range / 2;
+constexpr static auto range =
+  static_cast<int>(proportion * std::numeric_limits<int>::max());
+constexpr static auto low = std::numeric_limits<int>::max()/2 - range/2;
 constexpr static auto high = low + range;
 
 
