@@ -28,11 +28,20 @@ set_tests_properties(cli.version_matches PROPERTIES PASS_REGULAR_EXPRESSION "${P
 add_test(NAME cli.add COMMAND intro add 4 5)
 set_tests_properties(cli.add PROPERTIES PASS_REGULAR_EXPRESSION "9")
 
+add_test(NAME cli.add_bad COMMAND intro add 4 hello)
+set_tests_properties(cli.add_bad PROPERTIES PASS_REGULAR_EXPRESSION "not an integer")
+
 add_test(NAME cli.mult COMMAND intro mult 4 5)
 set_tests_properties(cli.mult PROPERTIES PASS_REGULAR_EXPRESSION "20")
 
+add_test(NAME cli.mult_bad COMMAND intro mult 4 hello)
+set_tests_properties(cli.mult_bad PROPERTIES PASS_REGULAR_EXPRESSION "not an integer")
+
 add_test(NAME cli.flaky_add COMMAND intro flaky_add 1073741823 1)
 set_tests_properties(cli.flaky_add PROPERTIES PASS_REGULAR_EXPRESSION "-1073741824")
+
+add_test(NAME cli.flaky_add_bad COMMAND intro flaky_add 4 hello)
+set_tests_properties(cli.flaky_add_bad PROPERTIES PASS_REGULAR_EXPRESSION "not an integer")
 
 add_test(NAME cli.bad_command COMMAND intro bad_command)
 set_tests_properties(cli.bad_command PROPERTIES PASS_REGULAR_EXPRESSION "Arguments did not match expected patterns")
@@ -49,8 +58,8 @@ if(ENABLE_DEVELOPER_MODE)
     set_tests_properties(cli.signed_overflow PROPERTIES PASS_REGULAR_EXPRESSION "signed integer overflow")
 endif()
 
-add_executable(tests ops.cpp test_parse_args.cpp)
-target_sources(tests PRIVATE ../src/parse_args.cpp)
+add_executable(tests test_ops.cpp test_parse_args.cpp)
+target_sources(tests PRIVATE ../src/ops.cpp ../src/parse_args.cpp)
 target_link_libraries(tests PRIVATE project_warnings project_options catch_main)
 target_include_directories(tests PRIVATE ../src)
 target_link_directories(tests PRIVATE ../src)
