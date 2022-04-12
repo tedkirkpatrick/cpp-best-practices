@@ -1,3 +1,5 @@
+#include <limits>
+
 #include <catch2/catch.hpp>
 
 #include "ops.hpp"
@@ -17,5 +19,9 @@ TEST_CASE("mult", "[ops]")
 TEST_CASE("flaky_add", "[ops]")
 {
   REQUIRE(ops::flaky_add(4, 5) == 9);
+  // LHS falls in flaky range
   REQUIRE(ops::flaky_add(1073741823, 1) == -1073741824);
+  // LHS falls in good range
+  REQUIRE(ops::flaky_add(1, 1073741823) ==  1073741824);
+  REQUIRE(ops::flaky_add(std::numeric_limits<int>::max(), -1) == std::numeric_limits<int>::max() - 1);
 }
