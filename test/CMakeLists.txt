@@ -34,17 +34,20 @@ set_tests_properties(cli.mult PROPERTIES PASS_REGULAR_EXPRESSION "20")
 add_test(NAME cli.flaky_add COMMAND intro flaky_add 1073741823 1)
 set_tests_properties(cli.flaky_add PROPERTIES PASS_REGULAR_EXPRESSION "-1073741824")
 
-add_test(NAME cli.leak COMMAND intro leak)
-set_tests_properties(cli.leak PROPERTIES PASS_REGULAR_EXPRESSION "detected memory leaks")
-
-add_test(NAME cli.bound COMMAND intro bound)
-set_tests_properties(cli.bound PROPERTIES PASS_REGULAR_EXPRESSION "buffer-overflow")
-
-add_test(NAME cli.signed_overflow COMMAND intro signed_overflow)
-set_tests_properties(cli.signed_overflow PROPERTIES PASS_REGULAR_EXPRESSION "signed integer overflow")
-
 add_test(NAME cli.bad_command COMMAND intro bad_command)
 set_tests_properties(cli.bad_command PROPERTIES PASS_REGULAR_EXPRESSION "Arguments did not match expected patterns")
+
+if(ENABLE_DEVELOPER_MODE)
+    # These tests can only run when the sanitizers are enabled
+    add_test(NAME cli.leak COMMAND intro leak)
+    set_tests_properties(cli.leak PROPERTIES PASS_REGULAR_EXPRESSION "detected memory leaks")
+
+    add_test(NAME cli.bound COMMAND intro bound)
+    set_tests_properties(cli.bound PROPERTIES PASS_REGULAR_EXPRESSION "buffer-overflow")
+
+    add_test(NAME cli.signed_overflow COMMAND intro signed_overflow)
+    set_tests_properties(cli.signed_overflow PROPERTIES PASS_REGULAR_EXPRESSION "signed integer overflow")
+endif()
 
 add_executable(tests ops.cpp test_parse_args.cpp)
 target_sources(tests PRIVATE ../src/parse_args.cpp)
