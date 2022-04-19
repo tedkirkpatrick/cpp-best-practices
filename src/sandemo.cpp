@@ -41,17 +41,17 @@ void leak_memory () {
 // Deliberately access outside bounds
 void bound() {
   auto logger = spdlog::get("logger");
-  std::array<char, length> a {};
+  std::array<char, length> array {};
   if (logger) {logger->critical("A reference is about to be made outside an array boundary");}
   // cppcheck-suppress unreadVariable
   // cppcheck-suppress containerOutOfBoundsIndexExpression
   // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-constant-array-index)
-  a[a.size()] = 'h'; 
+  array[array.size()] = 'h'; 
 }
 
 // Deliberately perform a signed overflow whenever passed i >= 1
-int signed_overflow(int i) {
-  return std::numeric_limits<int>::max() + i; // NOLINT clang-diagnostic-integer-overflow
+int signed_overflow(int iVal) {
+  return std::numeric_limits<int>::max() + iVal; // NOLINT clang-diagnostic-integer-overflow
 }
 
 } // namespace sandemo

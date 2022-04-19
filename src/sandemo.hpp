@@ -4,7 +4,7 @@
 namespace sandemo {
   void leak_memory();
   void bound();
-  int signed_overflow(int i);
+  int signed_overflow(int iVal);
 } // namespace sandemo
 
 #endif
