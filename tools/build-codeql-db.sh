@@ -36,4 +36,12 @@ else
 fi
 
 set -o xtrace
-codeql-cli/codeql database create codeql-db --language=cpp --command="cmake --build ${config_dir}"
+
+# Building the 'test' branch under CodeQL fails, so only build 'src' branch:
+# First ensure that everything is built, then delete object files in 'src' branch.
+#cmake --build ${config_dir}
+#/bin/rm -f ${config_dir}/src/CMakeFiles/intro.dir/*.o ${config_dir}/src/intro
+
+# Turn off ccache because CodeQL build must actually compile the code
+#cmake set -DOPT_ENABLE_CACHE:BOOL=OFF ${config_dir}
+codeql-cli/codeql database create codeql-db --language=cpp --overwrite --command="cmake --build ${config_dir} --clean-first --verbose"
