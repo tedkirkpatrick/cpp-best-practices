@@ -17,6 +17,39 @@
 #include <internal_use_only/config.hpp>
 
 
+//--- Begin deliberate error
+
+// CodeQL query only requires that there be a global function named "socket"
+// See code for 'predicate allocateDescriptorCall' at:
+// https://github.com/github/codeql/blob/b433f08cef9038d60e2bdf50bfedaf112f35d3f6/cpp/ql/lib/semmle/code/cpp/pointsto/PointsTo.qll#L699
+
+int socket () {
+  return 0;
+}
+
+// close() already declared in /usr/include/unistd.h, included by one of above headers
+
+/*
+// To pass clang-tidy, the following signature (including parameter name!) must match /usr/include/unistd.h
+int close(int __fd) {
+  // Must use parameter
+  return __fd);
+}
+*/
+
+// Following from example
+// https://github.com/github/codeql/blob/main/cpp/ql/src/Critical/DescriptorMayNotBeClosed.cpp
+int descriptor_may_not_be_closed() {
+	try {
+	        int sockfd = socket();
+		return sockfd; //if there are no exceptions, the socket is returned
+	} catch (int do_stuff_exception) {
+		return -1; //return error value, but sockfd may still be open
+	}
+}
+
+//--- End deliberate error
+
 static constexpr auto USAGE =
   R"(Demonstrate C++ build and test.
 
@@ -27,6 +60,7 @@ static constexpr auto USAGE =
           intro bound
           intro signed_overflow
           intro flaky_add <int_a> <int_b>
+          intro may_not_close_socket
           intro (-h | --help)
           intro --version
  Options:
@@ -81,6 +115,9 @@ int main(int argc, const char **argv)
     }
     else if (args.at("signed_overflow").asBool()) {
       (void) sandemo::signed_overflow(1);
+    }
+    else if (args.at("may_not_close_socket").asBool()) {
+      (void) descriptor_may_not_be_closed();
     }
     else {
       // The call to docopt above should have caught every other case
