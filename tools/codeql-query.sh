@@ -9,15 +9,20 @@ db=
 outfile_def=cpp-codeql-results.csv
 outfile=
 
+rerun_def=--rerun
+rerun=${rerun_def}
+
 usage() {
   cat <<EOF
-${0} [-h | --help] [(-D | --database) DB_DIR] [(-O | --outfile) OUT_FILE] QUERY
+${0} [-h | --help] [(-D | --database) DB_DIR] [(-O | --outfile) OUT_FILE] [-R | --no-rerun] QUERY
 Run a CodeQL query against a previously-built CodeQL database. Output in CSV format.
 
 Where
   QUERY is a path to a CodeQL query file.
 
   DB_DIR is a previously-build CodeQL database. Default is '${db_def}'.
+
+  Default is to run with '${rerun_def}'. -R/--no-rerun option runs with '--no-rerun'.
 EOF
 }
 
@@ -33,6 +38,9 @@ while [[ $# -ne 0 && "$1" =~ ^- ]]; do case $1 in
   -O | --outfile )
     outfile=${2}
     shift
+    ;;
+  -R | --no-rerun )
+    rerun=
     ;;
   *)
     usage
@@ -54,4 +62,4 @@ if [[ $# -ne 1 ]]; then
 fi
 
 set -o xtrace
-codeql-cli/codeql database analyze ${db} "${1}" --format=csv --output=${outfile}
+codeql-cli/codeql database analyze --format=csv --output=${outfile} ${rerun} -- ${db} "${1}"
