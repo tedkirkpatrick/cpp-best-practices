@@ -15,8 +15,8 @@ void initGlobals() {
 // See code for 'predicate allocateDescriptorCall' at:
 // https://github.com/github/codeql/blob/b433f08cef9038d60e2bdf50bfedaf112f35d3f6/cpp/ql/lib/semmle/code/cpp/pointsto/PointsTo.qll#L699
 
-int socket () {
-  return 0;
+int socket (int aVal) {
+  return aVal;
 }
 
 void close(int socket) {
@@ -26,15 +26,25 @@ void close(int socket) {
 
 // Following from example
 // https://github.com/github/codeql/blob/main/cpp/ql/src/Critical/DescriptorMayNotBeClosed.cpp
-int f() {
+int f(int chVal) {
 	try {
-	        int sockfd = socket();
+	        int sockfd = socket(chVal);
 		return sockfd; //if there are no exceptions, the socket is returned
 	} catch (int do_stuff_exception) {
 		return -1; //return error value, but sockfd may still be open
 	}
 }
 
+// My own example
+int g(int chVal) {
+  int sockfd = socket(chVal);
+  if (sockfd != -1) {
+    close(sockfd);
+    return 0;
+  }
+  return sockfd;
+  //return 0;
+}
 
 // NOLINTNEXTLINE [cppcoreguidelines-special-member-functions,hicpp-special-member-functions]
 class Test {
@@ -49,11 +59,11 @@ class Test {
   int m_a {};
 };
 
-int main () {
+int main (int argc, char**) {
   std::cout << Test(test_val).get_a() << '\n';
 
   std::cout << g_callCtr << '\n';
   initGlobals();
 
-  f();
+  g(argc);
 }

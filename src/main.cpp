@@ -17,38 +17,46 @@
 #include <internal_use_only/config.hpp>
 
 
-//--- Begin deliberate error
+//--- Begin simulated security error
 
-// CodeQL query only requires that there be a global function named "socket"
-// See code for 'predicate allocateDescriptorCall' at:
+// This section of code can be used to generate a CodeQL Critical / DescriptorMayNotBeClosed
+// alert from the GitHub CodeQL Security Check.
+// The code for this check is at
+// https://github.com/github/codeql/blob/main/cpp/ql/src/Critical/DescriptorMayNotBeClosed.ql
+
+// We simulate a function that can deallocate a socket descriptor in a local variable
+// without first closing it.  The CodeQL query above checks for a specific coding
+// pattern, which we implement in descriptor_may_not_be_closed().
+// If the function's call to close() is commented out, the query will succeed
+// and an alert will be issued.
+
+// Stub for actual socket creation call.  CodeQl only look at name,
+// not its actual code. See code for 'predicate allocateDescriptorCall()' at
 // https://github.com/github/codeql/blob/b433f08cef9038d60e2bdf50bfedaf112f35d3f6/cpp/ql/lib/semmle/code/cpp/pointsto/PointsTo.qll#L699
-
-int socket () {
-  return 0;
+int socket (int checkVal) {
+  return checkVal;
 }
 
 // close() already declared in /usr/include/unistd.h, included by one of above headers
 
-/*
-// To pass clang-tidy, the following signature (including parameter name!) must match /usr/include/unistd.h
-int close(int __fd) {
-  // Must use parameter
-  return __fd);
-}
-*/
+// Routine with a potential close error
+int descriptor_may_not_be_closed(int checkVal) {
+  auto logger = spdlog::get("logger");
+  if (logger) {logger->error("A simulated socket may not be closed before this program's end");}
 
-// Following from example
-// https://github.com/github/codeql/blob/main/cpp/ql/src/Critical/DescriptorMayNotBeClosed.cpp
-int descriptor_may_not_be_closed() {
-	try {
-	        int sockfd = socket();
-		return sockfd; //if there are no exceptions, the socket is returned
-	} catch (int do_stuff_exception) {
-		return -1; //return error value, but sockfd may still be open
-	}
+  int sockfd = socket(checkVal);
+  if (sockfd != -1) {
+    // Comment out the following line to generate a GitHub CodeQL Security Alert
+    close(sockfd);
+    return 0;
+  }
+  // If we had actually opened a socket, our caller would be required
+  // to call close on this result. In this case, no socket was opened,
+  // so the caller can simply ignore it.
+  return sockfd;
 }
 
-//--- End deliberate error
+//--- End simulated security error
 
 static constexpr auto USAGE =
   R"(Demonstrate C++ build and test.
@@ -117,7 +125,7 @@ int main(int argc, const char **argv)
       (void) sandemo::signed_overflow(1);
     }
     else if (args.at("may_not_close_socket").asBool()) {
-      (void) descriptor_may_not_be_closed();
+      (void) descriptor_may_not_be_closed(argc);
     }
     else {
       // The call to docopt above should have caught every other case
