@@ -31,9 +31,11 @@ int flaky_add(int lhs, int rhs) noexcept {
 
 // The following routine is from the example at
 // https://github.com/github/codeql/blob/main/cpp/ql/src/Likely%20Bugs/Arithmetic/BadAdditionOverflowCheckExample1.cpp
-bool check_overflow(unsigned short x, unsigned short y) {
+bool check_overflow(unsigned short lhs, unsigned short rhs) {
   // BAD: comparison is always false due to type promotion
-  return (x + y < x);
+  //return (lhs + rhs < lhs);
+  // GOOD: comparison is done on unsigned short result
+  return static_cast<unsigned short>(lhs + rhs) < lhs;
 }
 
 
