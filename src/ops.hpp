@@ -15,6 +15,8 @@ namespace ops {
 
 [[nodiscard]] int flaky_add(int lhs, int rhs) noexcept;
 
+[[nodiscard]] bool check_overflow(unsigned short x, unsigned short y);
+
 } // namespace ops
 
 #endif

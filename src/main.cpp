@@ -1,6 +1,7 @@
 #include <cassert>
 #include <functional>
 #include <iostream>
+#include <limits>
 
 #include <docopt/docopt.h>
 #include <spdlog/spdlog.h>
@@ -20,18 +21,20 @@
 //--- Begin simulated security error
 
 // This section of code can be used to generate a CodeQL Critical / DescriptorMayNotBeClosed
-// alert from the GitHub CodeQL Security Check.
-// The code for this check is at
+// alert, defined at
 // https://github.com/github/codeql/blob/main/cpp/ql/src/Critical/DescriptorMayNotBeClosed.ql
+// However, this check is not currently performed as part of the GitHub CodeQL
+// action 'github/codeql-action/analyze@v1' called in '.github/workflows/codeql-analysis.yml'.
+// You instead have to invoke the check in LGTM or using the CodeQL CLI.
 
 // We simulate a function that can deallocate a socket descriptor in a local variable
-// without first closing it.  The CodeQL query above checks for a specific coding
+// without first closing it.  'DescriptorMayNotBeClosed' checks for a specific coding
 // pattern, which we implement in descriptor_may_not_be_closed().
-// If the function's call to close() is commented out, the query will succeed
-// and an alert will be issued.
+// If the function's call to close() is commented out, the query will issue
+// an alert.  If the call to close() is left in, no alert will be issued.
 
-// Stub for actual socket creation call.  CodeQl only look at name,
-// not its actual code. See code for 'predicate allocateDescriptorCall()' at
+// Stub for actual socket creation call.  CodeQl only looks at its name,
+// not the actual code. See code for 'predicate allocateDescriptorCall()' at
 // https://github.com/github/codeql/blob/b433f08cef9038d60e2bdf50bfedaf112f35d3f6/cpp/ql/lib/semmle/code/cpp/pointsto/PointsTo.qll#L699
 int socket (int checkVal) {
   return checkVal;
@@ -46,7 +49,7 @@ int descriptor_may_not_be_closed(int checkVal) {
 
   int sockfd = socket(checkVal);
   if (sockfd != -1) {
-    // Comment out the following line to generate a GitHub CodeQL Security Alert
+    // Comment out the following line to generate a 'DescriptorMayNotBeClosed' alert
     close(sockfd);
     return 0;
   }
@@ -68,6 +71,7 @@ static constexpr auto USAGE =
           intro bound
           intro signed_overflow
           intro flaky_add <int_a> <int_b>
+          intro bad_overflow_check
           intro may_not_close_socket
           intro (-h | --help)
           intro --version
@@ -114,6 +118,13 @@ int main(int argc, const char **argv)
 		   b,
 		   ops::flaky_add(a, b));
       }
+    }
+    else if (args.at("bad_overflow_check").asBool()) {
+      auto lhs = std::numeric_limits<unsigned short>::max();
+      auto rhs = std::numeric_limits<unsigned short>::max();
+      auto sum = static_cast<unsigned short>(lhs + rhs);
+      auto ovf = ops::check_overflow(lhs, rhs);
+      fmt::print("Overflow check of {} + {} = {}: {}\n", lhs, rhs, sum, ovf);
     }
     else if (args.at("leak").asBool()) {
       sandemo::leak_memory();
