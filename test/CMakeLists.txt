@@ -43,8 +43,8 @@ set_tests_properties(cli.flaky_add PROPERTIES PASS_REGULAR_EXPRESSION "-10737418
 add_test(NAME cli.flaky_add_bad COMMAND intro flaky_add 4 hello)
 set_tests_properties(cli.flaky_add_bad PROPERTIES PASS_REGULAR_EXPRESSION "not an integer")
 
-add_test(NAME cli.bad_command COMMAND intro bad_command)
-set_tests_properties(cli.bad_command PROPERTIES PASS_REGULAR_EXPRESSION "Arguments did not match expected patterns")
+add_test(NAME cli.bad_overflow_check COMMAND intro bad_overflow_check)
+set_tests_properties(cli.bad_overflow_check PROPERTIES PASS_REGULAR_EXPRESSION "Overflow check")
 
 if(ENABLE_DEVELOPER_MODE)
     # These tests can only run when the sanitizers are enabled
@@ -57,6 +57,12 @@ if(ENABLE_DEVELOPER_MODE)
     add_test(NAME cli.signed_overflow COMMAND intro signed_overflow)
     set_tests_properties(cli.signed_overflow PROPERTIES PASS_REGULAR_EXPRESSION "signed integer overflow")
 endif()
+
+add_test(NAME cli.may_not_close_socket COMMAND intro may_not_close_socket)
+set_tests_properties(cli.may_not_close_socket PROPERTIES PASS_REGULAR_EXPRESSION "socket may not be closed")
+
+add_test(NAME cli.bad_command COMMAND intro bad_command)
+set_tests_properties(cli.bad_command PROPERTIES PASS_REGULAR_EXPRESSION "Arguments did not match expected patterns")
 
 add_executable(tests test_ops.cpp test_parse_args.cpp)
 target_sources(tests PRIVATE ../src/ops.cpp ../src/parse_args.cpp)
