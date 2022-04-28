@@ -53,7 +53,10 @@ void bound() {
 
 // Deliberately perform a signed overflow whenever passed i >= 1
 int signed_overflow(int iVal) {
-  return std::numeric_limits<int>::max() + iVal; // NOLINT clang-diagnostic-integer-overflow
+  auto logger = spdlog::get("logger");
+  auto sum = std::numeric_limits<int>::max() + iVal; // NOLINT clang-diagnostic-integer-overflow
+  if (logger) {logger->error("Signed overflow not caught");}
+  return sum;
 }
 
 } // namespace sandemo

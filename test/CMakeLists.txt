@@ -53,9 +53,14 @@ if(ENABLE_DEVELOPER_MODE)
 
     add_test(NAME cli.bound COMMAND intro bound)
     set_tests_properties(cli.bound PROPERTIES PASS_REGULAR_EXPRESSION "buffer-overflow")
+endif()
 
-    add_test(NAME cli.signed_overflow COMMAND intro signed_overflow)
+# This test produces different output if UB Sanitizer is active
+add_test(NAME cli.signed_overflow COMMAND intro signed_overflow)
+if(ENABLE_UNDEFINED_BEHAVIOR_SANITIZER)
     set_tests_properties(cli.signed_overflow PROPERTIES PASS_REGULAR_EXPRESSION "signed integer overflow")
+else()
+    set_tests_properties(cli.signed_overflow PROPERTIES PASS_REGULAR_EXPRESSION "Signed overflow not caught")
 endif()
 
 add_test(NAME cli.may_not_close_socket COMMAND intro may_not_close_socket)
