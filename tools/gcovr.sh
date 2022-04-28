@@ -4,10 +4,12 @@ set -o nounset
 set -o errexit
 
 delete=
+out_def=coverage.xml
+outfile=${out_def}
 
 usage() {
   cat <<EOF
-${0} [-h | --help] [-D | --delete] BUILD-DIR
+${0} [-h | --help] [-D | --delete] [--out OUT-FILE] BUILD-DIR
 Collect coverage results to date into the file 'coverage.xml'.
 
 Where
@@ -15,6 +17,8 @@ Where
 
   --delete specifies that the results files (*.gcda) will be deleted after processing.
     Default is to leave the files.
+
+  --out OUT-FILE specifies the name of the XML output file. Default: '${out_def}'.
 
 Notes:
 1. This script checks for specific clang and gcc releases. It will have to be
@@ -29,6 +33,10 @@ while [[ $# -ne 0 && "$1" =~ ^- ]]; do case $1 in
     ;;
   -D | --delete )
     delete=--delete
+    ;;
+  --out )
+    outfile=${2}
+    shift
     ;;
   *)
     usage
@@ -74,5 +82,4 @@ esac
 # Run this script in the build directory under test
 set -o xtrace
 cd ${build_dir}
-#gcovr --delete --root ../ --print-summary --xml-pretty --xml coverage.xml . --gcov-executable gcov-11
-gcovr ${delete} --root ../ --print-summary --xml-pretty --xml coverage.xml . --gcov-executable "${gcov_executable}"
+gcovr ${delete} --root ../ --print-summary --xml-pretty --xml ${outfile} . --gcov-executable "${gcov_executable}"
