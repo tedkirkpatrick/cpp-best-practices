@@ -82,6 +82,14 @@ if(BUILDING_MULTI_CONFIG)
   endif()
 endif()
 
+# Turn off UB sanitizer to get more accurate coverage results.
+# Note: For versions of 'project_options' before v0.18.0
+# (including the v0.17.0 used in this script),
+# defaults must be overridden before
+# include(DynamicProjectOptions.cmake).
+# From v.0.18.0 on, the defaults can be overridden any time
+# before the actual call to dynamic_project_options().
+set(ENABLE_SANITIZER_UNDEFINED_BEHAVIOR_DEFAULT OFF)
 
 # Import function 'dynamic_project_options()', used below.
 include(${_project_options_SOURCE_DIR}/src/DynamicProjectOptions.cmake)
