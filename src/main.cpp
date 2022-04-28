@@ -56,7 +56,7 @@ int descriptor_may_not_be_closed(int checkVal) {
   // If we had actually opened a socket, our caller would be required
   // to call close on this result. In this case, no socket was opened,
   // so the caller can simply ignore it.
-  return sockfd;
+  return sockfd; //LCOV_EXCL_LINE
 }
 
 //--- End simulated security error
@@ -130,7 +130,7 @@ int main(int argc, const char **argv)
       sandemo::leak_memory();
     }
     else if (args.at("bound").asBool()) {
-      sandemo::bound();
+      sandemo::bound(); //LCOV_EXCL_LINE
     }
     else if (args.at("signed_overflow").asBool()) {
       (void) sandemo::signed_overflow(1);
@@ -144,6 +144,6 @@ int main(int argc, const char **argv)
       assert(false);
     }
   } catch (const std::exception &e) {
-    fmt::print("Unhandled exception in main: {}\n", e.what());
+    fmt::print("Unhandled exception in main: {}\n", e.what()); //LCOV_EXCL_LINE
   }
 }

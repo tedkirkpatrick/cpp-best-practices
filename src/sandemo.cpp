@@ -39,6 +39,7 @@ void leak_memory () {
 } // NOLINT(clang-analyzer-cplusplus.NewDeleteLeaks)
 
 // Deliberately access outside bounds
+//LCOV_EXCL_START
 void bound() {
   auto logger = spdlog::get("logger");
   std::array<char, length> array {};
@@ -48,6 +49,7 @@ void bound() {
   // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-constant-array-index)
   array[array.size()] = 'h'; 
 }
+//LCOV_EXCL_STOP
 
 // Deliberately perform a signed overflow whenever passed i >= 1
 int signed_overflow(int iVal) {
