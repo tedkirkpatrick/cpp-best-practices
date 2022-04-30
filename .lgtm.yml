@@ -7,7 +7,7 @@ extraction:
   cpp:
     prepare:
       packages:
-        - gcc-11
+        - g++-10
         - ccache
       script:
         - mkdir ~/.conan
