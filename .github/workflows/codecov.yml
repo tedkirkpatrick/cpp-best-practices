@@ -38,6 +38,14 @@ jobs:
         developer_mode:
           - OFF
 
+        include:
+          # Add appropriate variables for gcov version required. This will intentionally break
+          # if you try to use a compiler that does not have gcov set
+          - compiler: gcc-11
+            gcov_executable: gcov
+          - compiler: llvm-13.0.0
+            gcov_executable: "llvm-cov gcov"
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
@@ -81,3 +89,10 @@ jobs:
         run: |
           ctest -C ${{matrix.build_type}}
           gcovr -j ${{env.nproc}} --delete --root ../ --print-summary --xml-pretty --xml coverage.xml . --gcov-executable '${{ matrix.gcov_executable }}'
+
+      - name: Publish coverage to codecov
+        uses: codecov/codecov-action@v2
+        with:
+          flags: ${{ runner.os }}
+          name: ${{ runner.os }}-coverage
+          files: ./build/coverage.xml
