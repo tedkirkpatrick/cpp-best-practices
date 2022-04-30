@@ -7,11 +7,8 @@ on:
   release:
     types: [published]
   push:
-    tags:
-      - v*
     branches:
-      - main
-      - develop
+      - codecov
 
 env:
   # Conan cache environment variables
@@ -29,10 +26,11 @@ jobs:
           - ubuntu-20.04
         compiler:
           # you can specify the version after `-` like "llvm-13.0.0".
-          #- llvm-13.0.0
-          - gcc-11
+          - llvm-13.0.0
+          #- gcc-11
         gcov_executable:
-          - gcov
+          #- gcov
+          - "llvm-cov gcov"
         generator:
           - "Ninja Multi-Config"
         build_type:
@@ -90,6 +88,7 @@ jobs:
         working-directory: ./build
         run: |
           ctest -C ${{matrix.build_type}}
+          find . -name \*.gcda
           gcovr -j ${{env.nproc}} --delete --root ../ --print-summary --xml-pretty --xml coverage.xml . --gcov-executable '${{ matrix.gcov_executable }}'
 
       - name: Publish coverage to codecov
