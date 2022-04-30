@@ -132,13 +132,13 @@ jobs:
         run: |
           OpenCppCoverage.exe --export_type cobertura:coverage.xml --cover_children -- ctest -C ${{matrix.build_type}}
 
-      - name: Publish coverage to codecov
-        uses: codecov/codecov-action@v2
-        if: runner.os == 'Windows' || (runner.os != 'Windows' && matrix.build_type == 'Debug')
-        with:
-          flags: ${{ runner.os }}
-          name: ${{ runner.os }}-coverage
-          files: ./build/coverage.xml
+#      - name: Publish coverage to codecov
+#        uses: codecov/codecov-action@v2
+#        if: runner.os == 'Windows' || (runner.os != 'Windows' && matrix.build_type == 'Debug')
+#        with:
+#          flags: ${{ runner.os }}
+#          name: ${{ runner.os }}-coverage
+#          files: ./build/coverage.xml
 
       - name: Package the build
         if: ${{ startsWith(github.ref, 'refs/tags/') && matrix.package_generator != '' }}

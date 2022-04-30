@@ -141,9 +141,9 @@ int main(int argc, const char **argv)
     else {
       // The call to docopt above should have caught every other case
       // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-array-to-pointer-decay,hicpp-no-array-decay)
-      assert(false);
+      assert(false); //LCOV_EXCL_LINE
     }
-  } catch (const std::exception &e) {
+  } catch (const std::exception &e) {                          //LCOV_EXCL_LINE
     fmt::print("Unhandled exception in main: {}\n", e.what()); //LCOV_EXCL_LINE
   }
 }
