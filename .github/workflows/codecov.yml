@@ -31,6 +31,7 @@ jobs:
           # you can specify the version after `-` like "llvm-13.0.0".
           #- llvm-13.0.0
           - gcc-11
+        gcov_executable: gcov
         generator:
           - "Ninja Multi-Config"
         build_type:
@@ -38,13 +39,13 @@ jobs:
         developer_mode:
           - OFF
 
-        include:
-          # Add appropriate variables for gcov version required. This will intentionally break
-          # if you try to use a compiler that does not have gcov set
-          - compiler: gcc-11
-            gcov_executable: gcov
-          - compiler: llvm-13.0.0
-            gcov_executable: "llvm-cov gcov"
+#        include:
+#          # Add appropriate variables for gcov version required. This will intentionally break
+#          # if you try to use a compiler that does not have gcov set
+#          - compiler: gcc-11
+#            gcov_executable: gcov
+#          - compiler: llvm-13.0.0
+#            gcov_executable: "llvm-cov gcov"
 
     steps:
       - name: Checkout repository
