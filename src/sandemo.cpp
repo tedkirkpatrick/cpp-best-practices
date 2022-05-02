@@ -48,6 +48,7 @@ void bound() {
   // cppcheck-suppress containerOutOfBoundsIndexExpression
   // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-constant-array-index)
   array[array.size()] = 'h'; 
+  if (logger) {logger->critical("The reference outside an array boundary was not caught");}
 }
 //LCOV_EXCL_STOP
 

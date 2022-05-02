@@ -46,18 +46,24 @@ set_tests_properties(cli.flaky_add_bad PROPERTIES PASS_REGULAR_EXPRESSION "not a
 add_test(NAME cli.bad_overflow_check COMMAND intro bad_overflow_check)
 set_tests_properties(cli.bad_overflow_check PROPERTIES PASS_REGULAR_EXPRESSION "Overflow check")
 
-if(ENABLE_DEVELOPER_MODE)
-    # These tests can only run when the sanitizers are enabled
-    add_test(NAME cli.leak COMMAND intro leak)
+# This test only produces output if leak sanitizer is active
+# (if the sanitizer is inactive, the leak is invisible)
+add_test(NAME cli.leak COMMAND intro leak)
+if(ENABLE_SANITIZER_LEAK)
     set_tests_properties(cli.leak PROPERTIES PASS_REGULAR_EXPRESSION "detected memory leaks")
-
-    add_test(NAME cli.bound COMMAND intro bound)
-    set_tests_properties(cli.bound PROPERTIES PASS_REGULAR_EXPRESSION "buffer-overflow")
 endif()
 
-# This test produces different output if UB Sanitizer is active
+# This test produces different output if address sanitizer is active
+add_test(NAME cli.bound COMMAND intro bound)
+if(ENABLE_SANITIZER_ADDRESS)
+    set_tests_properties(cli.bound PROPERTIES PASS_REGULAR_EXPRESSION "buffer-overflow")
+else()
+    set_tests_properties(cli.bound PROPERTIES PASS_REGULAR_EXPRESSION "The reference outside an array boundary was not caught")
+endif()
+
+# This test produces different output if UB sanitizer is active
 add_test(NAME cli.signed_overflow COMMAND intro signed_overflow)
-if(ENABLE_UNDEFINED_BEHAVIOR_SANITIZER)
+if(ENABLE_SANITIZER_UNDEFINED_BEHAVIOR)
     set_tests_properties(cli.signed_overflow PROPERTIES PASS_REGULAR_EXPRESSION "signed integer overflow")
 else()
     set_tests_properties(cli.signed_overflow PROPERTIES PASS_REGULAR_EXPRESSION "Signed overflow not caught")

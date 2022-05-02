@@ -28,9 +28,6 @@ jobs:
           # you can specify the version after `-` like "llvm-13.0.0".
           - llvm-13.0.0
           #- gcc-11
-        gcov_executable:
-          #- gcov
-          - "llvm-cov gcov"
         generator:
           - "Ninja Multi-Config"
         build_type:
@@ -38,13 +35,13 @@ jobs:
         developer_mode:
           - ON
 
-#        include:
-#          # Add appropriate variables for gcov version required. This will intentionally break
-#          # if you try to use a compiler that does not have gcov set
-#          - compiler: gcc-11
-#            gcov_executable: gcov
-#          - compiler: llvm-13.0.0
-#            gcov_executable: "llvm-cov gcov"
+        include:
+          # Add appropriate variables for gcov version required. This will intentionally break
+          # if you try to use a compiler that does not have gcov set
+          #- compiler: gcc-11
+          #  gcov_executable: gcov
+          - compiler: llvm-13.0.0
+            gcov_executable: "llvm-cov gcov"
 
     steps:
       - name: Checkout repository
@@ -82,24 +79,17 @@ jobs:
         # checkers just waste time. The sanitizers and checkers are run in the CI script, not here.
         # This run is just to get coverage data.
         run: |
-          cmake -S . -B ./build -G "${{matrix.generator}}" -DCMAKE_BUILD_TYPE:STRING=${{matrix.build_type}} -DENABLE_DEVELOPER_MODE:BOOL=${{matrix.developer_mode}} -DOPT_ENABLE_COVERAGE=ON -DGIT_SHA:STRING=${{ github.sha }} -DENABLE_SANITIZER_ADDRESS=OFF -DENABLE_SANITIZER_UNDEFINED_BEHAVIOR=OFF -DENABLE_CPPCHECK=OFF -DENABLE_CLANG_TIDY=OFF --trace-expand --trace-source=DynamicProjectOptions.cmake
+          cmake -S . -B ./build -G "${{matrix.generator}}" -DCMAKE_BUILD_TYPE:STRING=${{matrix.build_type}} -DENABLE_DEVELOPER_MODE:BOOL=${{matrix.developer_mode}} -DOPT_ENABLE_COVERAGE=ON -DOPT_ENABLE_SANITIZER_ADDRESS=OFF -DOPT_ENABLE_SANITIZER_UNDEFINED_BEHAVIOR=OFF -DOPT_ENABLE_CPPCHECK=OFF -DOPT_ENABLE_CLANG_TIDY=OFF -DGIT_SHA:STRING=${{ github.sha }}
 
       - name: Build
         # Execute the build.  You can specify a specific target with "--target <NAME>"
         run: |
-          cmake --build ./build --config ${{matrix.build_type}} --verbose
+          cmake --build ./build --config ${{matrix.build_type}}
 
       - name: "Test and compute coverage"
         working-directory: ./build
         run: |
           ctest -C ${{matrix.build_type}}
-          echo
-          echo "--- .gcda ---"
-          find . -name \*.gcda
-          echo "--- .gcno ---"
-          find . -name \*.gcno
-          echo "----"
-          echo
           gcovr -j ${{env.nproc}} --delete --root ../ --print-summary --xml-pretty --xml coverage.xml . --gcov-executable '${{ matrix.gcov_executable }}'
 
       - name: Publish coverage to codecov

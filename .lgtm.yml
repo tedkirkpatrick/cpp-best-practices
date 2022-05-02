@@ -17,8 +17,8 @@ extraction:
         - python3 -m pip install cmake
         - source ~/.profile
     after_prepare:
-        - export CC=gcc
-        - export CXX=g++
+        - export CC=gcc-10
+        - export CXX=g++-10
     configure:
       command:
         - mkdir build
