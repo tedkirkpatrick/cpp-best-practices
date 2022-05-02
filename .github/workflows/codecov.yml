@@ -36,7 +36,7 @@ jobs:
         build_type:
           - Debug
         developer_mode:
-          - OFF
+          - ON
 
 #        include:
 #          # Add appropriate variables for gcov version required. This will intentionally break
@@ -76,8 +76,13 @@ jobs:
           conan remove -f '*/system'
 
       - name: Configure CMake
+        # The dynamic_project_options() macro only allows COVERAGE to be turned ON when DEVELOPER_MODE=ON.
+        # So we turn DEVELOPER_MODE ON but then turn OFF nearly every flag that it defaults to ON,
+        # such as the sanitizers and static checkers. Sanitizers confuse the coverage counts and the static
+        # checkers just waste time. The sanitizers and checkers are run in the CI script, not here.
+        # This run is just to get coverage data.
         run: |
-          cmake -S . -B ./build -G "${{matrix.generator}}" -DCMAKE_BUILD_TYPE:STRING=${{matrix.build_type}} -DENABLE_DEVELOPER_MODE:BOOL=${{matrix.developer_mode}} -DENABLE_COVERAGE:BOOL=ON -DGIT_SHA:STRING=${{ github.sha }}
+          cmake -S . -B ./build -G "${{matrix.generator}}" -DCMAKE_BUILD_TYPE:STRING=${{matrix.build_type}} -DENABLE_DEVELOPER_MODE:BOOL=${{matrix.developer_mode}} -DOPT_ENABLE_COVERAGE=ON -DGIT_SHA:STRING=${{ github.sha }} -DENABLE_SANITIZER_ADDRESS=OFF -DENABLE_SANITIZER_UNDEFINED_BEHAVIOR=OFF -DENABLE_CPPCHECK=OFF -DENABLE_CLANG_TIDY=OFF --trace-expand --trace-source=DynamicProjectOptions.cmake
 
       - name: Build
         # Execute the build.  You can specify a specific target with "--target <NAME>"
@@ -88,11 +93,13 @@ jobs:
         working-directory: ./build
         run: |
           ctest -C ${{matrix.build_type}}
+          echo
           echo "--- .gcda ---"
           find . -name \*.gcda
           echo "--- .gcno ---"
           find . -name \*.gcno
           echo "----"
+          echo
           gcovr -j ${{env.nproc}} --delete --root ../ --print-summary --xml-pretty --xml coverage.xml . --gcov-executable '${{ matrix.gcov_executable }}'
 
       - name: Publish coverage to codecov
