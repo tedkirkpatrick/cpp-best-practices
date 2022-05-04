@@ -26,8 +26,8 @@ jobs:
           - ubuntu-20.04
         compiler:
           # you can specify the version after `-` like "llvm-13.0.0".
-          - llvm-13.0.0
-          #- gcc-11
+          #- llvm-13.0.0
+          - gcc-11
         generator:
           - "Ninja Multi-Config"
         build_type:
@@ -38,10 +38,10 @@ jobs:
         include:
           # Add appropriate variables for gcov version required. This will intentionally break
           # if you try to use a compiler that does not have gcov set
-          #- compiler: gcc-11
-          #  gcov_executable: gcov
-          - compiler: llvm-13.0.0
-            gcov_executable: "llvm-cov gcov"
+          - compiler: gcc-11
+            gcov_executable: gcov-11
+          #- compiler: llvm-13.0.0
+          #  gcov_executable: "llvm-cov gcov"
 
     steps:
       - name: Checkout repository
@@ -84,12 +84,22 @@ jobs:
       - name: Build
         # Execute the build.  You can specify a specific target with "--target <NAME>"
         run: |
-          cmake --build ./build --config ${{matrix.build_type}}
+          cmake --build ./build --config ${{matrix.build_type}} --verbose
 
       - name: "Test and compute coverage"
         working-directory: ./build
         run: |
+          echo
+          echo "----- Pre test"
+          find . -name \*.gcda -exec ls -lh '{}' \;
+          echo "-----"
+          echo
           ctest -C ${{matrix.build_type}}
+          echo
+          echo "----- Post test"
+          find . -name \*.gcda -exec ls -lh '{}' \;
+          echo "-----"
+          echo
           gcovr -j ${{env.nproc}} --delete --root ../ --print-summary --xml-pretty --xml coverage.xml . --gcov-executable '${{ matrix.gcov_executable }}'
 
       - name: Publish coverage to codecov
