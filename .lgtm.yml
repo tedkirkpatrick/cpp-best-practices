@@ -7,7 +7,7 @@ extraction:
   cpp:
     prepare:
       packages:
-        - g++-11.1
+        - g++-10
         - ccache
       script:
         - mkdir ~/.conan
@@ -16,6 +16,9 @@ extraction:
         - python3 -m pip install conan
         - python3 -m pip install cmake
         - source ~/.profile
+    after_prepare:
+        - export CC=gcc
+        - export CXX=g++
     configure:
       command:
         - mkdir build
