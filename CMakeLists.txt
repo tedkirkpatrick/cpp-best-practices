@@ -1,4 +1,5 @@
 cmake_minimum_required(VERSION 3.16)
+cmake_policy(VERSION 3.25)
 
 # Not ideal to use this global variable, but necessary to make sure
 # that tooling and projects use the same version
